@@ -57,8 +57,8 @@ public class JDBCExample {
             System.out.println("-----------------------");
             
             int suCodigoECI=2118677;
-            registrarNuevoProducto(con, suCodigoECI, "SU NOMBRE", 99999999);            
-            con.commit();
+            /*registrarNuevoProducto(con, suCodigoECI, "SU NOMBRE", 99999999);            
+            con.commit();*/
             
             cambiarNombreProducto(con, suCodigoECI, "EL NUEVO NOMBRE");
             con.commit();
@@ -103,7 +103,7 @@ public class JDBCExample {
     public static List<String> nombresProductosPedido(Connection con, int codigoPedido) throws SQLException{
         List<String> np=new LinkedList<>();
         //Crear prepared statement
-        String sql = "SELECT ORD_PRODUCTOS.nombre FROM ORD_PRODUCTOS,ORD_DETALLES_PEDIDOS WHERE ORD_DETALLES_PEDIDOS.producto = ORD_PRODUCTOS.codigo AND ORD_DETALLES_PEDIDOS.pedido = ?";
+        String sql = "SELECT ORD_PRODUCTOS.nombre FROM ORD_PRODUCTOS,ORD_DETALLES_PEDIDO WHERE ORD_DETALLES_PEDIDO.producto_fk = ORD_PRODUCTOS.codigo AND ORD_DETALLES_PEDIDO.pedido_fk = ?";
         PreparedStatement preparedStatement = con.prepareCall(sql);
         //asignar parámetros
         preparedStatement.setInt(1, codigoPedido);
@@ -126,13 +126,14 @@ public class JDBCExample {
      */
     public static int valorTotalPedido(Connection con, int codigoPedido)throws SQLException{
         //Crear prepared statement
-        String sql = "SELECT SUM(ORD_DETALLES_PEDIDOS.cantidad * ORD_PRODUCTOS.precio) FROM ORD_PRODUCTOS,ORD_DETALLES_PEDIDOS WHERE ORD_DETALLES_PEDIDOS.producto = ORD_PRODUCTOS.codigo AND ORD_DETALLES_PEDIDOS.pedido = ?";
+        String sql = "SELECT SUM(ORD_DETALLES_PEDIDO.cantidad * ORD_PRODUCTOS.precio) FROM ORD_PRODUCTOS,ORD_DETALLES_PEDIDO WHERE ORD_DETALLES_PEDIDO.producto_fk = ORD_PRODUCTOS.codigo AND ORD_DETALLES_PEDIDO.pedido_fk = ?";
         PreparedStatement preparedStatement = con.prepareCall(sql);
         //asignar parámetros
         preparedStatement.setInt(1, codigoPedido);
         //usar executeQuery
         ResultSet result = preparedStatement.executeQuery();
         //Sacar resultado del ResultSet
+        result.next();
         return result.getInt(1);
     }
     
